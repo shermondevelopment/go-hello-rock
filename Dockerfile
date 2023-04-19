@@ -1,9 +1,15 @@
-FROM golang:1.19
+FROM golang:alpine AS builder
 
 WORKDIR /usr/src
 
 COPY . .
 
-RUN go mod init fullcycle
+RUN go build -ldflags '-s -w' main.go
 
-CMD ["go", "run", "."]
+FROM scratch
+
+WORKDIR /
+
+COPY --from=builder /usr/src /
+
+CMD ["./main"]
